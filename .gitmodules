@@ -1,0 +1,3 @@
+[submodule "pyxis"]
+	path = submodules/pyxis
+	url = git@github.com:primait/pyxis.git

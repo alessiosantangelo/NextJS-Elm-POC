@@ -17,7 +17,7 @@ type Msg
     = CitiesFetched (RemoteData Http.Error (List City))
     | PerformCitiesQuery
     | Submit
-    | ResidentialCityChanged (Autocomplete.Msg City)
+    | ResidentialCityChanged (Autocomplete.Msg String)
     | ResidentialProvinceChanged Select.Msg
     | PlateChanged Input.Msg
     | DynamicsChanged Textarea.Msg

@@ -21,8 +21,7 @@ module Form.Data exposing
 
 import Date exposing (Date)
 import Form.Api.City as City exposing (City)
-import Form.Api.Province as Province
-import Form.Msg as Msg exposing (Msg)
+import Form.Msg exposing (Msg)
 import Form.Types as Types
 import Http
 import PrimaFunction
@@ -38,17 +37,17 @@ import RemoteData exposing (RemoteData)
 type Data
     = Data
         { isFormSubmitted : Bool
-        , birth : Input.Model Data Date Msg
-        , claimDate : Input.Model Data Date Msg
-        , claimType : RadioCardGroup.Model Data Types.Claim Msg
-        , dynamic : Textarea.Model Data Msg
-        , insuranceType : RadioCardGroup.Model Data Types.Insurance Msg
-        , peopleInvolved : RadioCardGroup.Model Data Bool Msg
-        , plate : Input.Model Data String Msg
-        , privacyCheck : CheckboxGroup.Model Data Types.Option Msg
-        , residentialCity : Autocomplete.Model Data City Msg
-        , residentialProvince : Select.Model Data String Msg
-        , vehiclesOwn : CheckboxGroup.Model Data Types.Vehicles Msg
+        , birth : Input.Model Msg
+        , claimDate : Input.Model Msg
+        , claimType : RadioCardGroup.Model Types.Claim Msg
+        , dynamic : Textarea.Model Msg
+        , insuranceType : RadioCardGroup.Model Types.Insurance Msg
+        , peopleInvolved : RadioCardGroup.Model Bool Msg
+        , plate : Input.Model Msg
+        , privacyCheck : CheckboxGroup.Model Types.Option Msg
+        , residentialCity : Autocomplete.Model String Msg
+        , residentialProvince : Select.Model Msg
+        , vehiclesOwn : CheckboxGroup.Model Types.Vehicles Msg
         }
 
 
@@ -56,34 +55,17 @@ initialData : Data
 initialData =
     Data
         { isFormSubmitted = False
-        , birth = Input.init "" birthValidation
-        , claimDate = Input.init "" birthValidation
-        , claimType =
-            Result.fromMaybe ""
-                |> always
-                |> RadioCardGroup.init (Just Types.CarAccident)
-        , dynamic = Textarea.init "" notEmptyStringValidation
-        , insuranceType =
-            Types.Motor
-                |> cardValidation
-                |> RadioCardGroup.init Nothing
-        , peopleInvolved =
-            False
-                |> cardValidation
-                |> RadioCardGroup.init Nothing
-        , plate = Input.init "" notEmptyStringValidation
-        , privacyCheck = CheckboxGroup.init [] privacyValidation
-        , residentialCity =
-            Result.fromMaybe ""
-                |> always
-                |> Autocomplete.init Nothing City.getName City.startsWith
-                |> Autocomplete.setOnInput Msg.PerformCitiesQuery
-        , residentialProvince =
-            Result.fromMaybe ""
-                |> always
-                |> Select.init (Just (Province.getName Province.capitalProvince))
-                |> Select.setOptions (List.map (\p -> Select.option { label = Province.getName p, value = Province.getName p }) Province.list)
-        , vehiclesOwn = CheckboxGroup.init [] vehiclesOwn
+        , birth = Input.init
+        , claimDate = Input.init
+        , claimType = RadioCardGroup.init
+        , dynamic = Textarea.init
+        , insuranceType = RadioCardGroup.init
+        , peopleInvolved = RadioCardGroup.init
+        , plate = Input.init
+        , privacyCheck = CheckboxGroup.init
+        , residentialCity = Autocomplete.init
+        , residentialProvince = Select.init
+        , vehiclesOwn = CheckboxGroup.init
         }
 
 
@@ -127,7 +109,7 @@ updatePlate msg (Data d) =
     ( Data { d | plate = componentModel }, componentCmd )
 
 
-updateResidentialCity : Autocomplete.Msg City -> Data -> ( Data, Cmd Msg )
+updateResidentialCity : Autocomplete.Msg String -> Data -> ( Data, Cmd Msg )
 updateResidentialCity msg (Data d) =
     let
         ( componentModel, componentCmd ) =
@@ -138,7 +120,12 @@ updateResidentialCity msg (Data d) =
 
 updateResidentialCityRemoteData : RemoteData Http.Error (List City) -> Data -> ( Data, Cmd Msg )
 updateResidentialCityRemoteData remoteData (Data d) =
-    ( Data { d | residentialCity = Autocomplete.setOptions remoteData d.residentialCity }, Cmd.none )
+    let
+        options : RemoteData Http.Error (List (Autocomplete.Option String))
+        options =
+            RemoteData.map (List.map (\c -> Autocomplete.option { value = City.getIstatCode c, label = City.getName c })) remoteData
+    in
+    ( Data { d | residentialCity = Autocomplete.setOptions options d.residentialCity }, Cmd.none )
 
 
 updateResidentialProvince : Select.Msg -> Data -> ( Data, Cmd Msg )
@@ -199,9 +186,9 @@ updateVehiclesOwn msg (Data d) =
 -- Validations
 
 
-notEmptyStringValidation : Data -> String -> Result String String
-notEmptyStringValidation (Data data) value =
-    if data.isFormSubmitted && String.isEmpty value then
+notEmptyStringValidation : String -> Result String String
+notEmptyStringValidation value =
+    if String.isEmpty value then
         Err "This field cannot be empty."
 
     else
@@ -219,28 +206,28 @@ cardValidation default (Data data) value =
             )
 
 
-birthValidation : Data -> String -> Result String Date.Date
-birthValidation (Data data) value =
-    case ( data.isFormSubmitted, Date.fromIsoString value ) of
-        ( True, Ok validDate ) ->
+birthValidation : String -> Result String Date.Date
+birthValidation value =
+    case Date.fromIsoString value of
+        Ok validDate ->
             Ok validDate
 
         _ ->
             Err "Enter a valid date."
 
 
-privacyValidation : Data -> List Types.Option -> Result String (List Types.Option)
-privacyValidation (Data data) list =
-    if data.isFormSubmitted && List.isEmpty list then
+privacyValidation : List Types.Option -> Result String (List Types.Option)
+privacyValidation list =
+    if List.isEmpty list then
         Err "You must agree to privacy policy."
 
     else
         Ok [ Types.AcceptPrivacy ]
 
 
-vehiclesOwn : Data -> List Types.Vehicles -> Result String (List Types.Vehicles)
-vehiclesOwn (Data data) list =
-    if data.isFormSubmitted && List.length list < 2 then
+ownedVehiclesValidation : List Types.Vehicles -> Result String (List Types.Vehicles)
+ownedVehiclesValidation list =
+    if List.length list < 2 then
         Err "Select at least two options"
 
     else

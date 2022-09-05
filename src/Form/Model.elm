@@ -98,14 +98,14 @@ submit model =
 validate : Data -> Result String Response
 validate ((Data config) as data) =
     Ok Response
-        |> parseAndThen (Input.validate data config.birth)
-        |> parseAndThen (Input.validate data config.claimDate)
-        |> parseAndThen (RadioCardGroup.validate data config.claimType)
-        |> parseAndThen (Textarea.validate data config.dynamic)
-        |> parseAndThen (RadioCardGroup.validate data config.insuranceType)
-        |> parseAndThen (RadioCardGroup.validate data config.peopleInvolved)
-        |> parseAndThen (Input.validate data config.plate)
-        |> parseAndThen (Autocomplete.validate data config.residentialCity)
+        |> parseAndThen (Data.birthValidation (Input.getValue config.birth))
+        |> parseAndThen (Data.birthValidation (Input.getValue config.claimDate))
+        |> parseAndThen (Result.fromMaybe (RadioCardGroup.getValue config.claimType))
+        |> parseAndThen (Data.notEmptyStringValidation (Textarea.getValue config.dynamic))
+        |> parseAndThen (RadioCardGroup.getValue config.insuranceType)
+        |> parseAndThen (RadioCardGroup.getValue config.peopleInvolved)
+        |> parseAndThen (Data.birthValidation (Input.getValue config.plate))
+        |> parseAndThen (Autocomplete.getValue config.residentialCity)
 
 
 parseAndThen : Result x a -> Result x (a -> b) -> Result x b
