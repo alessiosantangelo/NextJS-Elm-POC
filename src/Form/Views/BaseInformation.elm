@@ -1,6 +1,6 @@
 module Form.Views.BaseInformation exposing (view)
 
-import Form.Data exposing (Data(..))
+import Form.Data as Data exposing (Data(..))
 import Form.Msg as Msg exposing (Msg)
 import Form.Types as Types
 import Html exposing (Html)
@@ -32,8 +32,7 @@ view ((Data config) as data) =
                 [ "plate"
                     |> Input.text
                     |> Input.withPlaceholder "AA123BC"
-                    --|> Input.withStrategy Error.onSubmit
-                    --|> Input.withIsSubmitted config.isFormSubmitted
+                    |> Input.withValidationOnSubmit Data.notEmptyStringValidation config.isFormSubmitted
                     |> Input.withLabel
                         ("Vehicle plate"
                             |> Label.config
@@ -44,16 +43,14 @@ view ((Data config) as data) =
             , Grid.oneColRowSmall
                 [ "birth_date"
                     |> Input.date
-                    --|> Input.withStrategy Error.onSubmit
-                    --|> Input.withIsSubmitted config.isFormSubmitted
+                    |> Input.withValidationOnSubmit Data.dateValidation config.isFormSubmitted
                     |> Input.withLabel (Label.config "Owner birth date")
                     |> Input.render Msg.BirthDateChanged config.birth
                 ]
             , Grid.oneColRowSmall
                 [ "residential_city"
                     |> Autocomplete.config
-                    --|> Autocomplete.withStrategy Error.onSubmit
-                    --|> Autocomplete.withIsSubmitted config.isFormSubmitted
+                    |> Autocomplete.withValidationOnSubmit Data.residentialCityValidation config.isFormSubmitted
                     |> Autocomplete.withNoResultsFoundMessage "No results were found."
                     |> Autocomplete.withLabel (Label.config "Residential city")
                     |> Autocomplete.withHint "Type at least 3 chars to start searching."
@@ -67,13 +64,12 @@ view ((Data config) as data) =
                 ]
             , Grid.oneColRowSmall
                 [ Select.config "residential_province" False
-                    --|> Select.withStrategy Error.onSubmit
-                    --|> Select.withIsSubmitted config.isFormSubmitted
+                    |> Select.withValidationOnSubmit Data.residentialProvinceValidation config.isFormSubmitted
                     |> Select.withLabel (Label.config "Provincia di residenza")
                     |> Select.render Msg.ResidentialProvinceChanged config.residentialProvince
                 ]
             , Grid.oneColRowSmall
-                [ "vehicles-own"
+                [ "owned_vehicles"
                     |> CheckboxGroup.config
                     |> CheckboxGroup.withOptions
                         [ CheckboxGroup.option { value = Types.Car, label = Html.text "Car" }
@@ -81,16 +77,14 @@ view ((Data config) as data) =
                         , CheckboxGroup.option { value = Types.Van, label = Html.text "Van" }
                         ]
                     |> CheckboxGroup.withLabel (Label.config "Kind of vehicles involved in the accident")
-                    --|> CheckboxGroup.withStrategy Error.onSubmit
-                    --|> CheckboxGroup.withLayout CheckboxGroup.vertical
-                    --|> CheckboxGroup.withIsSubmitted config.isFormSubmitted
+                    |> CheckboxGroup.withValidationOnSubmit Data.ownedVehiclesValidation config.isFormSubmitted
+                    |> CheckboxGroup.withLayout CheckboxGroup.vertical
                     |> CheckboxGroup.render Msg.VehiclesOwnChanged config.vehiclesOwn
                 ]
             , Grid.oneColRowSmall
                 [ "claim_date"
                     |> Input.date
-                    --|> Input.withStrategy Error.onSubmit
-                    --|> Input.withIsSubmitted config.isFormSubmitted
+                    |> Input.withValidationOnSubmit Data.dateValidation config.isFormSubmitted
                     |> Input.withLabel (Label.config "Claim date")
                     |> Input.render Msg.ClaimDateChanged config.claimDate
                 ]
@@ -99,8 +93,7 @@ view ((Data config) as data) =
                     |> CheckboxGroup.config
                     |> CheckboxGroup.withOptions
                         [ CheckboxGroup.option { value = Types.AcceptPrivacy, label = viewPrivacy } ]
-                    --|> CheckboxGroup.withStrategy Error.onSubmit
-                    --|> CheckboxGroup.withIsSubmitted config.isFormSubmitted
+                    |> CheckboxGroup.withValidationOnSubmit Data.privacyValidation config.isFormSubmitted
                     |> CheckboxGroup.withId "checkbox-group-single"
                     |> CheckboxGroup.render Msg.PrivacyChanged config.privacyCheck
                 ]

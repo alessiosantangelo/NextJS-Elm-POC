@@ -1,16 +1,14 @@
 module Form.Views.ClaimType exposing (view)
 
-import Form.Data exposing (Data(..))
+import Form.Data as Data exposing (Data(..))
 import Form.Msg as Msg exposing (Msg)
 import Form.Types as Fields
 import Html
 import Html.Attributes
 import Pyxis.Components.Button as Button
-import Pyxis.Components.Field.Error as Error
 import Pyxis.Components.Field.RadioCardGroup as RadioCardGroup
 import Pyxis.Components.Form.FieldSet as FieldSet
 import Pyxis.Components.Form.Grid as Grid
-import Pyxis.Components.Form.Grid.Row as Row
 import Pyxis.Components.Form.Legend as Legend
 import Pyxis.Components.IconSet as IconSet
 
@@ -21,7 +19,7 @@ view ((Data config) as data) =
         |> FieldSet.withHeader
             [ Grid.oneColRowSmall
                 [ Legend.config "Choose the accident type"
-                    |> Legend.withImage "../../../assets/placeholder.svg"
+                    |> Legend.withImage "https://via.placeholder.com/150"
                     |> Legend.render
                 ]
             ]
@@ -29,8 +27,7 @@ view ((Data config) as data) =
             [ Grid.oneColRowSmall
                 [ "claim-type"
                     |> RadioCardGroup.config
-                    --|> RadioCardGroup.withStrategy Strategy.onSubmit
-                    --|> RadioCardGroup.withIsSubmitted config.isFormSubmitted
+                    |> RadioCardGroup.withValidationOnSubmit Data.claimTypeValidation config.isFormSubmitted
                     |> RadioCardGroup.withLayout RadioCardGroup.vertical
                     |> RadioCardGroup.withOptions
                         [ RadioCardGroup.option

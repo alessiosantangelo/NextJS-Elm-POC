@@ -1,6 +1,6 @@
 module Form.Views.ClaimDetail exposing (view)
 
-import Form.Data exposing (Data(..))
+import Form.Data as Data exposing (Data(..))
 import Form.Msg as Msg exposing (Msg)
 import Html
 import Html.Attributes
@@ -28,8 +28,7 @@ view ((Data config) as data) =
             [ Grid.oneColRowSmall
                 [ "people-involved"
                     |> RadioCardGroup.config
-                    --|> RadioCardGroup.withStrategy Strategy.onSubmit
-                    --|> RadioCardGroup.withIsSubmitted config.isFormSubmitted
+                    |> RadioCardGroup.withValidationOnSubmit Data.involvedPeopleValidation config.isFormSubmitted
                     |> RadioCardGroup.withLabel (Label.config "Is there any involved people?")
                     |> RadioCardGroup.withOptions
                         [ RadioCardGroup.option { value = True, title = Nothing, text = Just "Yes", addon = Nothing }
@@ -40,8 +39,7 @@ view ((Data config) as data) =
             , Grid.oneColRowSmall
                 [ "claim-dynamic"
                     |> Textarea.config
-                    --|> Textarea.withStrategy Strategy.onSubmit
-                    --|> Textarea.withIsSubmitted config.isFormSubmitted
+                    |> Textarea.withValidationOnSubmit Data.notEmptyStringValidation config.isFormSubmitted
                     |> Textarea.withLabel (Label.config "Dynamic")
                     |> Textarea.withPlaceholder "Briefly describe the dynamics of the accident."
                     |> Textarea.withHint "Max. 300 words."

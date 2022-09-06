@@ -1,10 +1,17 @@
 module Form.Data exposing
     ( Data(..)
-    , birthValidation
+    , claimTypeValidation
+    , dateValidation
     , initialData
+    , insuranceTypeValidation
+    , involvedPeopleValidation
     , isInsuranceTypeHousehold
     , isInsuranceTypeMotor
     , notEmptyStringValidation
+    , ownedVehiclesValidation
+    , privacyValidation
+    , residentialCityValidation
+    , residentialProvinceValidation
     , updateBirthDate
     , updateClaimDate
     , updateClaimType
@@ -206,14 +213,34 @@ cardValidation default (Data data) value =
             )
 
 
-birthValidation : String -> Result String Date.Date
-birthValidation value =
-    case Date.fromIsoString value of
-        Ok validDate ->
-            Ok validDate
+dateValidation : String -> Result String Date.Date
+dateValidation =
+    Date.fromIsoString
 
-        _ ->
-            Err "Enter a valid date."
+
+claimTypeValidation : Maybe Types.Claim -> Result String Types.Claim
+claimTypeValidation =
+    Result.fromMaybe "Choose a claim type."
+
+
+insuranceTypeValidation : Maybe Types.Insurance -> Result String Types.Insurance
+insuranceTypeValidation =
+    Result.fromMaybe "Choose an insurance type."
+
+
+involvedPeopleValidation : Maybe Bool -> Result String Bool
+involvedPeopleValidation =
+    Result.fromMaybe "Select whether or not people were involved."
+
+
+residentialCityValidation : Maybe String -> Result String String
+residentialCityValidation =
+    Result.fromMaybe "Choose a residential city."
+
+
+residentialProvinceValidation : Maybe String -> Result String String
+residentialProvinceValidation =
+    Result.fromMaybe "Choose a residential province."
 
 
 privacyValidation : List Types.Option -> Result String (List Types.Option)

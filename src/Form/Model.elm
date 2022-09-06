@@ -41,7 +41,7 @@ type alias Response =
     , insuranceType : Fields.Insurance
     , peopleInvolved : Bool
     , plate : String
-    , residentialCity : City
+    , residentialCity : String
     }
 
 
@@ -96,16 +96,16 @@ submit model =
 
 
 validate : Data -> Result String Response
-validate ((Data config) as data) =
+validate (Data config) =
     Ok Response
-        |> parseAndThen (Data.birthValidation (Input.getValue config.birth))
-        |> parseAndThen (Data.birthValidation (Input.getValue config.claimDate))
-        |> parseAndThen (Result.fromMaybe (RadioCardGroup.getValue config.claimType))
+        |> parseAndThen (Data.dateValidation (Input.getValue config.birth))
+        |> parseAndThen (Data.dateValidation (Input.getValue config.claimDate))
+        |> parseAndThen (Data.claimTypeValidation (RadioCardGroup.getValue config.claimType))
         |> parseAndThen (Data.notEmptyStringValidation (Textarea.getValue config.dynamic))
-        |> parseAndThen (RadioCardGroup.getValue config.insuranceType)
-        |> parseAndThen (RadioCardGroup.getValue config.peopleInvolved)
-        |> parseAndThen (Data.birthValidation (Input.getValue config.plate))
-        |> parseAndThen (Autocomplete.getValue config.residentialCity)
+        |> parseAndThen (Data.insuranceTypeValidation (RadioCardGroup.getValue config.insuranceType))
+        |> parseAndThen (Data.involvedPeopleValidation (RadioCardGroup.getValue config.peopleInvolved))
+        |> parseAndThen (Data.notEmptyStringValidation (Input.getValue config.plate))
+        |> parseAndThen (Data.notEmptyStringValidation (Maybe.withDefault "" (Autocomplete.getValue config.residentialCity)))
 
 
 parseAndThen : Result x a -> Result x (a -> b) -> Result x b

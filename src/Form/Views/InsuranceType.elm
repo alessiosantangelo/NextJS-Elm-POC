@@ -1,6 +1,6 @@
 module Form.Views.InsuranceType exposing (view)
 
-import Form.Data exposing (Data(..))
+import Form.Data as Data exposing (Data(..))
 import Form.Msg as Msg exposing (Msg)
 import Form.Types as Fields
 import Pyxis.Components.Field.Error as Error
@@ -25,21 +25,20 @@ view ((Data config) as data) =
             [ Grid.oneColRowMedium
                 [ "insurance-type"
                     |> RadioCardGroup.config
-                    --|> RadioCardGroup.withStrategy Strategy.onSubmit
-                    --|> RadioCardGroup.withIsSubmitted config.isFormSubmitted
+                    |> RadioCardGroup.withValidationOnSubmit Data.insuranceTypeValidation config.isFormSubmitted
                     |> RadioCardGroup.withSize RadioCardGroup.large
                     |> RadioCardGroup.withOptions
                         [ RadioCardGroup.option
                             { value = Fields.Motor
                             , title = Just "Vehicles"
                             , text = Nothing
-                            , addon = RadioCardGroup.addonImage "../../../../assets/placeholder.svg"
+                            , addon = RadioCardGroup.addonImage "https://via.placeholder.com/150"
                             }
                         , RadioCardGroup.option
                             { value = Fields.Household
                             , title = Just "Household and family"
                             , text = Nothing
-                            , addon = RadioCardGroup.addonImage "../../../../assets/placeholder.svg"
+                            , addon = RadioCardGroup.addonImage "https://via.placeholder.com/150"
                             }
                         ]
                     |> RadioCardGroup.render Msg.InsuranceTypeChanged config.insuranceType
