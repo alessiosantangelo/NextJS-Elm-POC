@@ -2,14 +2,22 @@ import React, { useEffect } from 'react';
 
 import {Elm} from './../src/Login/Main.elm'
 import Head from 'next/head'
+import { useRouter } from 'next/router';
 
 export default function Home() {
+  const router = useRouter()
+  let elmApp;
   
   useEffect(() => {
     
-    Elm.Login.Main.init({
+    elmApp = Elm.Login.Main.init({
         flags: {},
         node: document.getElementById('app')
+    })
+
+    elmApp.ports.urlChanged.subscribe(url => {
+      console.log('Moving to url', url)
+      router.push(url, undefined, { shallow: true })
     })
 
     return () => null;
@@ -30,4 +38,17 @@ export default function Home() {
       
     </div>
   )
+}
+
+export const getStaticProps = async () => {
+  return {
+    props: {}
+  }
+}
+
+export const getStaticPaths = async () => {
+  return {
+    paths: ['/login', '/login/logged'],
+    fallback: false,
+  }
 }
