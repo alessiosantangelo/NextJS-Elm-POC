@@ -16,8 +16,14 @@ export default function Home() {
     })
 
     elmApp.ports.urlChanged.subscribe(url => {
-      console.log('Moving to url', url)
-      router.push(url, undefined, { shallow: true })
+      console.log('Moving to url', url, 'url includes login?', url.includes('/login'))
+      if(url.includes('/login')) {
+        router.push(url, undefined, { shallow: true })
+      }
+      else {
+        window.location.href = url
+      }
+      
     })
 
     return () => null;

@@ -11,7 +11,7 @@ export default function Home() {
         <title>Create Next App</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
+ 
       <main>
           <h1>Homepage</h1>
           <p>This template is handled by React.</p>
