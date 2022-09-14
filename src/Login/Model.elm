@@ -24,4 +24,4 @@ type Msg
 
 initialModel : Flags -> Url -> Browser.Navigation.Key -> Model
 initialModel flags url key =
-    { key = key, route = Router.toRoute url }
+    { key = key, route = Maybe.withDefault Router.NotFound (Router.toRoute url) }

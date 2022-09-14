@@ -15,17 +15,6 @@ export default function Home() {
         node: document.getElementById('app')
     })
 
-    elmApp.ports.urlChanged.subscribe(url => {
-      console.log('Moving to url', url, 'url includes login?', url.includes('/login'))
-      if(url.includes('/login')) {
-        router.push(url, undefined, { shallow: true })
-      }
-      else {
-        window.location.href = url
-      }
-      
-    })
-
     return () => null;
 
   }, []);
@@ -46,15 +35,4 @@ export default function Home() {
   )
 }
 
-export const getStaticProps = async () => {
-  return {
-    props: {}
-  }
-}
 
-export const getStaticPaths = async () => {
-  return {
-    paths: ['/login', '/login/logged'],
-    fallback: false,
-  }
-}

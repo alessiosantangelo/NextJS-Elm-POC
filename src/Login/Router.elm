@@ -6,8 +6,7 @@ module Login.Router exposing
     )
 
 import Url exposing (Url)
-import Url.Builder
-import Url.Parser exposing ((</>), int, s, string)
+import Url.Parser exposing ((</>), s)
 
 
 type Route
@@ -21,13 +20,12 @@ parser =
     Url.Parser.oneOf
         [ Url.Parser.map LoggedIn (s "login" </> s "logged")
         , Url.Parser.map Login (s "login")
-        , Url.Parser.map Login Url.Parser.top
         ]
 
 
-toRoute : Url -> Route
+toRoute : Url -> Maybe Route
 toRoute =
-    Url.Parser.parse parser >> Maybe.withDefault NotFound
+    Url.Parser.parse parser
 
 
 toString : Route -> String
